@@ -12,25 +12,30 @@ GOTO End
 echo TRACE: Read settings
 for /f "eol=# tokens=1,2 delims==" %%i in (%1) do SET %%i=%%j
 
+set varNewBackupSet=%varBackupLocation%\%DATE:~-4%-%DATE:~3,2%-%DATE:~0,2%-%TIME:~0,2%-%TIME:~3,2%-backup.%varFormat%
+
 IF "%varBackupType%"=="full" GOTO CreateNewSet
 
 echo TRACE: Load existing set
-for /F %%i in (CurrentSet.txt) do set varTargetBackupSet=%%i
+for /F %%i in (CurrentSet.txt) do set varOldBackupSet=%%i
 
-IF EXIST "%varTargetBackupSet%" GOTO Execute
+IF EXIST "%varOldBackupSet%" GOTO ExecuteIncremental
 
 echo Backup set does not exist!
 GOTO End
 
 :CreateNewSet
 echo TRACE: Create new set
+echo %varNewBackupSet% > CurrentSet.txt
 
-set varTargetBackupSet=%varBackupLocation%\%DATE:~-4%-%DATE:~3,2%-%DATE:~0,2%-%TIME:~0,2%-%TIME:~3,2%-backup.%varFormat%
-echo %varTargetBackupSet% &gt; CurrentSet.txt
+:ExecuteFull
+echo TRACE: Execute Full backup
+"%var7zipPath%\7z" a -t%varFormat% "%varNewBackupSet%" @"%varFileList%"
+GOTO End
 
-:Execute
-echo TRACE: Execute backup
-"%var7zipPath%\7z" %varMode% -t%varFormat% "%varTargetBackupSet%" @"%varFileList%"
+:ExecuteIncremental
+echo TRACE: Execute Incremental backup
+"%var7zipPath%\7z" u -u- -u!"%varNewBackupSet%" -t%varFormat% "%varOldBackupSet%" @"%varFileList%"
 
 :End
 echo TRACE: Finished
