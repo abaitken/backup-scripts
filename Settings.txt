@@ -1,0 +1,17 @@
+# The path to the where the 7z.exe executable is
+varPathToSevenZip=C:\Program Files\7-Zip
+
+# The path where to store the backup sets
+varBackupPath=D:\Backups
+
+# The file path to the inclusions file
+varInclusionsFile=D:\Logaan\Documents\Tools\7ZipBackup\Settings\Inclusions.txt
+
+# The file path to the exclusions file
+varExclusionsFile=D:\Logaan\Documents\Tools\7ZipBackup\Settings\Exclusions.txt
+
+# Whether to wait at the end of the backup
+varWaitAtEnd=true
+
+# Type of backup archive to create
+varArchiveType=zip

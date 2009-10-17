@@ -1,42 +1,39 @@
-@echo off
+@ECHO OFF
 
-echo TRACE: Start
+ECHO 7-Zip backup script
+ECHO Written by Alex Boyne-Aitken
+ECHO Last update: 07/11/2009
+ECHO.
 
-IF EXIST %1 GOTO Begin
+ECHO TRACE: Parse arguments: ''%~f1''
+IF EXIST %~f1 GOTO labelBegin
 
-echo Settings file does not exist
-GOTO End
+ECHO.
+ECHO ERROR: Settings file not found!
+GOTO labelWaitEnd
 
-:Begin
+:labelBegin
 
-echo TRACE: Read settings
-for /f "eol=# tokens=1,2 delims==" %%i in (%1) do SET %%i=%%j
+ECHO.
+ECHO TRACE: Reading settings
+FOR /F "eol=# tokens=1,2 delims==" %%i IN (%~f1) DO (
+SET %%i=%%j
+ECHO TRACE: %%i = ''%%j''
+)
 
-set varNewBackupSet=%varBackupLocation%\%DATE:~-4%-%DATE:~3,2%-%DATE:~0,2%-%TIME:~0,2%-%TIME:~3,2%-backup.%varFormat%
+SET varTimeStamp=%DATE:~-4%-%DATE:~3,2%-%DATE:~0,2%-%TIME:~0,2%-%TIME:~3,2%
+SET varTargetBackupSet=%varBackupPath%\%varTimeStamp%-backup.zip
 
-IF "%varBackupType%"=="full" GOTO CreateNewSet
+ECHO.
+ECHO TRACE: Backup set: ''%varTargetBackupSet%''
+ECHO TRACE: Command line: ''"%varPathToSevenZip%\7z" a -t%varArchiveType% "%varTargetBackupSet%" @"%varInclusionsFile%" -xr@"%varExclusionsFile%"''
 
-echo TRACE: Load existing set
-for /F %%i in (CurrentSet.txt) do set varOldBackupSet=%%i
+ECHO.
+ECHO TRACE: Executing backup
+::"%varPathToSevenZip%\7z" a -t%varArchiveType% "%varTargetBackupSet%" @"%varInclusionsFile%" -xr@"%varExclusionsFile%"
 
-IF EXIST "%varOldBackupSet%" GOTO ExecuteIncremental
+IF /I NOT "%varWaitAtEnd%" == "true" GOTO labelEnd
 
-echo Backup set does not exist!
-GOTO End
-
-:CreateNewSet
-echo TRACE: Create new set
-echo %varNewBackupSet% > CurrentSet.txt
-
-:ExecuteFull
-echo TRACE: Execute Full backup
-"%var7zipPath%\7z" a -t%varFormat% "%varNewBackupSet%" @"%varFileList%"
-GOTO End
-
-:ExecuteIncremental
-echo TRACE: Execute Incremental backup
-"%var7zipPath%\7z" u -u- -u!"%varNewBackupSet%" -t%varFormat% "%varOldBackupSet%" @"%varFileList%"
-
-:End
-echo TRACE: Finished
-pause
+:labelWaitEnd
+PAUSE
+:labelEnd
