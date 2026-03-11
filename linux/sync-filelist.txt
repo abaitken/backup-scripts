@@ -1,0 +1,9 @@
+# File list
+# Lines which start with an exclamation will be excluded
+/etc/
+/home/
+/extstor/
+!/home/logaan/.local/
+!/home/logaan/.cache/
+!/home/logaan/pivpnbackup/
+!/home/logaan/noip/

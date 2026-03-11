@@ -1,0 +1,10 @@
+# Any line start with a hash is a comment
+# Any line starting with a plus (+) indicates a path to include in the sync
+# Any line starting with a minus (-) indicates a path to exclude from the sync
++D:\Build
+-D:\_COPIED\*
++D:\Tools
++D:\Users\abaitken\Documents
++D:\Users\abaitken\Desktop
++D:\Users\abaitken\Pictures
+-D:\git-home
